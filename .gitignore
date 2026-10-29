@@ -1,0 +1,5 @@
+.env
+.runs/
+keys.txt
+*.agekey
+*.dec.yaml
