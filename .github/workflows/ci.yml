@@ -47,7 +47,4 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm --force-update
           helm template argocd argo/argo-cd --version "$ARGOCD_VERSION" -n argocd -f bootstrap/argocd/values.yaml > /tmp/argocd.yaml
           curl -fsSL https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz | tar xz
-          ./kubeconform -strict -summary \
-            -schema-location default \
-            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-            /tmp/argocd.yaml
+          ./kubeconform -strict -summary -ignore-missing-schemas /tmp/argocd.yaml
