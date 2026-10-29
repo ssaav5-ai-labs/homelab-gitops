@@ -14,7 +14,7 @@ jobs:
       - name: shellcheck
         run: |
           curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz" | tar xJ
-          ./shellcheck-v0.11.0/shellcheck bootstrap/*.sh scripts/*.sh
+          find bootstrap/ scripts/ -name '*.sh' -exec ./shellcheck-v0.11.0/shellcheck -x {} +
 
       - name: check-secrets
         run: scripts/check-secrets.sh
