@@ -20,8 +20,8 @@ if [[ -z "$ENC_FILES" ]]; then
   echo "No encrypted files found (OK for now)."
 else
   for f in $ENC_FILES; do
-    if ! head -5 "$f" | grep -q '^sops:'; then
-      echo "FAIL: $f missing top-level sops: block" >&2
+    if ! grep -q '^sops:' "$f"; then
+      echo "FAIL: $f missing sops: block" >&2
       FAIL=1
     fi
   done
