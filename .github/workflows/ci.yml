@@ -41,8 +41,11 @@ jobs:
           sys.exit(fail)
           "
 
-      - name: helm-template + kubeconform (k8s-monitoring)
+      - name: helm-template + kubeconform
         run: |
+          ARGOCD_VERSION=$(grep ARGOCD_CHART_VERSION bootstrap/versions.env | cut -d= -f2)
+          helm repo add argo https://argoproj.github.io/argo-helm --force-update
+          helm template argocd argo/argo-cd --version "$ARGOCD_VERSION" -n argocd -f bootstrap/argocd/values.yaml > /tmp/argocd.yaml
           K8S_MON_VERSION=$(grep K8S_MONITORING_CHART_VERSION bootstrap/versions.env | cut -d= -f2)
           helm repo add grafana https://grafana.github.io/helm-charts --force-update
           helm template monitoring grafana/k8s-monitoring --version "$K8S_MON_VERSION" -n monitoring -f platform/monitoring/chart-values.yaml > /tmp/monitoring.yaml
