@@ -75,6 +75,11 @@ collectors:
   alloy-singleton:
     presets: [deployment]
     replicas: 1
+    extraConfig: |
+      remote.kubernetes.secret "grafana_cloud_metrics" {
+        name      = "grafana-cloud"
+        namespace = "monitoring"
+      }
     alloy:
       resources:
         requests:
