@@ -26,6 +26,26 @@ if [[ -f apps/argocd.yaml ]]; then
   else
     echo "OK: KSOPS_VERSION=$KSOPS_VERSION matches values.yaml"
   fi
+
+  echo ""
+  echo "=== Checking K8S_MONITORING_CHART_VERSION vs apps/monitoring.yaml ==="
+  MON_REV=$(grep -A1 'k8s-monitoring' apps/monitoring.yaml | grep 'targetRevision' | sed 's/.*targetRevision:\s*//' | tr -d '"')
+  if [[ "$MON_REV" != "$K8S_MONITORING_CHART_VERSION" ]]; then
+    echo "FAIL: K8S_MONITORING_CHART_VERSION=$K8S_MONITORING_CHART_VERSION but apps/monitoring.yaml targetRevision=$MON_REV" >&2
+    FAIL=1
+  else
+    echo "OK: K8S_MONITORING_CHART_VERSION=$K8S_MONITORING_CHART_VERSION matches apps/monitoring.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking PROM_OPERATOR_CRDS_CHART_VERSION vs apps/prometheus-operator-crds.yaml ==="
+  CRDS_REV=$(grep 'targetRevision:' apps/prometheus-operator-crds.yaml | sed 's/.*targetRevision:\s*//' | tr -d '"')
+  if [[ "$CRDS_REV" != "$PROM_OPERATOR_CRDS_CHART_VERSION" ]]; then
+    echo "FAIL: PROM_OPERATOR_CRDS_CHART_VERSION=$PROM_OPERATOR_CRDS_CHART_VERSION but apps/prometheus-operator-crds.yaml targetRevision=$CRDS_REV" >&2
+    FAIL=1
+  else
+    echo "OK: PROM_OPERATOR_CRDS_CHART_VERSION=$PROM_OPERATOR_CRDS_CHART_VERSION matches apps/prometheus-operator-crds.yaml"
+  fi
 else
   echo "apps/argocd.yaml does not exist yet (step 7); skipping version checks."
 fi
