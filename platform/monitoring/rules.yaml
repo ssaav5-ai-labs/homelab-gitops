@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: lab
+  namespace: monitoring
+spec:
+  groups:
+    - name: playbook-test
+      rules:
+        - alert: PlaybookTest
+          expr: vector(1)
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Test alert from playbook 05, synced from Git"
