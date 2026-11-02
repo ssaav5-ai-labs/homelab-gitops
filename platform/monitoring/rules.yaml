@@ -14,3 +14,12 @@ spec:
             severity: warning
           annotations:
             summary: "Test alert from playbook 05, synced from Git"
+    - name: lab
+      rules:
+        - alert: LabSilent
+          expr: absent_over_time(up{cluster="homelab"}[10m])
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "no metrics from the homelab for 15 minutes: both nodes, the network or Alloy are down"
