@@ -35,7 +35,7 @@ jobs:
           EXPECTED=$(curl -fsSL "${BASE}/mimirtool-linux-amd64-sha-256")
           echo "${EXPECTED}  /tmp/mimirtool" | sha256sum -c -
           chmod +x /tmp/mimirtool
-          /tmp/mimirtool rules sync --help | grep -q -- '--extra-headers'
+          /tmp/mimirtool rules sync --help 2>&1 | grep -q -- '--extra-headers'
 
       - name: Extract PrometheusRule specs
         run: |
