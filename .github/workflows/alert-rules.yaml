@@ -69,4 +69,5 @@ jobs:
         run: |
           /tmp/mimirtool rules sync /tmp/rules/*.yaml \
             --concurrency 1 \
+            --namespaces=homelab \
             --extra-headers "X-Grafana-Alerting-Datasource-UID=grafanacloud-prom"
