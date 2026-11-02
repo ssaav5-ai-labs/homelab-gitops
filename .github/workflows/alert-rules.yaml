@@ -3,13 +3,13 @@ name: alert-rules
 on:
   pull_request:
     paths:
-      - 'platform/monitoring/**'
-      - '.github/workflows/alert-rules.yaml'
+      - '**/*.yaml'
+      - '**/*.yml'
   push:
     branches: [main]
     paths:
-      - 'platform/monitoring/**'
-      - '.github/workflows/alert-rules.yaml'
+      - '**/*.yaml'
+      - '**/*.yml'
 
 permissions:
   contents: read
@@ -41,15 +41,20 @@ jobs:
         run: |
           mkdir -p /tmp/rules
           found=0
-          for f in platform/monitoring/*.yaml; do
-            if /tmp/yq -e '.kind == "PrometheusRule"' "$f" >/dev/null 2>&1; then
-              name=$(basename "$f" .yaml)
-              { printf 'namespace: homelab\n'; printf 'groups:\n'; /tmp/yq '.spec.groups' "$f"; } > "/tmp/rules/${name}.yaml"
-              found=1
-            fi
-          done
+          {
+            printf 'namespace: homelab\n'
+            printf 'groups:\n'
+            while IFS= read -r f; do
+              count=$(/tmp/yq eval-all 'select(.kind == "PrometheusRule") | .metadata.name' "$f" | wc -l)
+              if [ "$count" -eq 0 ]; then
+                continue
+              fi
+              /tmp/yq eval-all '[select(.kind == "PrometheusRule") | .spec.groups[]]' "$f"
+              found=$((found+1))
+            done < <(grep -rl --include='*.yaml' --include='*.yml' --exclude-dir=.git -E '^kind:[[:space:]]*PrometheusRule[[:space:]]*$' . | sort)
+          } > /tmp/rules/homelab.yaml
           if [ "$found" -eq 0 ]; then
-            echo "No PrometheusRule files found under platform/monitoring" >&2
+            echo "No PrometheusRule documents found in the repo" >&2
             exit 1
           fi
           ls -l /tmp/rules
