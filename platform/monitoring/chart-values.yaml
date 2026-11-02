@@ -12,11 +12,6 @@ destinations:
       type: basic
       usernameKey: metrics-username
       passwordKey: token
-    rules:
-      enabled: true
-      address: https://prometheus-prod-68-prod-eu-west-6.grafana.net
-      collector: alloy-singleton
-      syncInterval: 5m
     secret:
       create: false
       name: grafana-cloud
@@ -75,11 +70,6 @@ collectors:
   alloy-singleton:
     presets: [deployment]
     replicas: 1
-    extraConfig: |
-      remote.kubernetes.secret "grafana_cloud_metrics" {
-        name      = "grafana-cloud"
-        namespace = "monitoring"
-      }
     alloy:
       resources:
         requests:
