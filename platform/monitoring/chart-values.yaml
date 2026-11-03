@@ -33,6 +33,16 @@ clusterMetrics:
   enabled: true
   collector: alloy-metrics
 
+hostMetrics:
+  enabled: true
+  collector: alloy-metrics
+  linuxHosts:
+    enabled: true
+    metricsTuning:
+      useDefaultAllowList: true
+      includeMetrics:
+        - node_vmstat_pswpin
+
 clusterEvents:
   enabled: true
   collector: alloy-singleton

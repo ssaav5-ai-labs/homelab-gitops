@@ -23,3 +23,31 @@ spec:
             severity: critical
           annotations:
             summary: "no metrics from the homelab for 15 minutes: both nodes, the network or Alloy are down"
+        - alert: ArgoCDAppOutOfSync
+          expr: argocd_app_info{sync_status!="Synced"} == 1
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "an Argo CD app has been out of sync for 30 minutes: Git no longer describes the cluster"
+        - alert: ArgoCDAppUnhealthy
+          expr: argocd_app_info{health_status!~"Healthy|Progressing"} == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "an Argo CD app has been unhealthy for 15 minutes"
+        - alert: NodeSwapping
+          expr: rate(node_vmstat_pswpin[10m]) > 100
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "steady swapping means this node needs less load or more RAM"
+        - alert: NodeDiskFilling
+          expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.15
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "the root filesystem on a node is less than 15% free"
