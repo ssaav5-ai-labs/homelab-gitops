@@ -24,8 +24,37 @@ else
       echo "FAIL: $f missing sops: block" >&2
       FAIL=1
     fi
+
+    # No recognizable plaintext key anywhere in the file (values only print line numbers).
+    if grep -qE 'sk-or-|sk-lf-' "$f"; then
+      echo "FAIL: $f contains a plaintext key at line(s): $(grep -nE 'sk-or-|sk-lf-' "$f" | cut -d: -f1 | tr '\n' ' ')" >&2
+      FAIL=1
+    fi
+
+    # Every value under stringData:/data: must be a SOPS ENC[...] blob.
+    if ! awk '
+      /^(stringData|data):[[:space:]]*$/ { inblock=1; next }
+      inblock && /^[^[:space:]]/ { inblock=0 }
+      inblock && /^[[:space:]]+[^[:space:]#][^:]*:/ {
+        v=$0
+        sub(/^[[:space:]]+[^:]*:[[:space:]]*/, "", v)
+        gsub(/^["\x27]|["\x27]$/, "", v)
+        if (v !~ /^ENC\[/) {
+          k=$0
+          sub(/^[[:space:]]+/, "", k)
+          sub(/:.*/, "", k)
+          print "FAIL: " FILENAME ": non-ENC value under key " k
+          bad=1
+        }
+      }
+      END { exit bad }
+    ' "$f"; then
+      FAIL=1
+    fi
   done
-  echo "All encrypted files have sops: block."
+  if (( ! FAIL )); then
+    echo "All encrypted files have sops: block and ENC[...] values."
+  fi
 fi
 
 if (( FAIL )); then
