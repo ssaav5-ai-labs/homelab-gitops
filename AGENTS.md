@@ -13,3 +13,4 @@ This repo is the GitOps source of truth for the k3s cluster. Everything here is 
 - Never print or read the age key (`$SOPS_AGE_KEY_FILE`) or run `sops decrypt`. Use `sops edit` in your own terminal.
 - Never push to `main`; open a PR. Merging to `main` changes the cluster.
 - If reality differs from the playbook, fix the run, then propose a playbook edit in the same PR.
+- Scratch work (chart renders, pulled charts, test files) goes in /tmp/agent/, never directly in /tmp.
