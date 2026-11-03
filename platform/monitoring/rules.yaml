@@ -56,3 +56,10 @@ spec:
             severity: warning
           annotations:
             summary: "a container has restarted more than 3 times in 15 minutes"
+        - alert: LiteLLMDown
+          expr: up{cluster="homelab", namespace="llm-gateway"} == 0 or absent(up{cluster="homelab", namespace="llm-gateway"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "the LiteLLM gateway is down or not being scraped for 5 minutes"
