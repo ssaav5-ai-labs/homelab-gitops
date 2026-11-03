@@ -11,7 +11,7 @@ spec:
     - host: llm.192.168.86.211.nip.io
       http:
         paths:
-          - path: /
+          - path: /v1
             pathType: Prefix
             backend:
               service:

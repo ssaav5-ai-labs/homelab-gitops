@@ -5,6 +5,7 @@ litellm_settings:
   max_budget: 115
   budget_duration: 30d
   callbacks: ["langfuse_otel", "prometheus"]
+  require_auth_for_metrics_endpoint: false
 
 model_list:
   - model_name: fast
