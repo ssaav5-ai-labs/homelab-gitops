@@ -18,7 +18,7 @@ server:
   metrics:
     enabled: true
     serviceMonitor:
-      enabled: true
+      enabled: false
   resources:
     requests:
       cpu: 25m
@@ -40,6 +40,10 @@ controller:
     enabled: true
     serviceMonitor:
       enabled: true
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'argocd_app_info|argocd_app_sync_total|argocd_app_k8s_request_total|argocd_cluster_info|up'
+          action: keep
   resources:
     requests:
       cpu: 100m
@@ -59,7 +63,7 @@ repoServer:
   metrics:
     enabled: true
     serviceMonitor:
-      enabled: true
+      enabled: false
   env:
     - name: SOPS_AGE_KEY_FILE
       value: /home/argocd/.config/sops/age/keys.txt
