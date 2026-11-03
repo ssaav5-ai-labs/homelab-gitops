@@ -1,0 +1,21 @@
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+litellm_settings:
+  max_budget: 115
+  budget_duration: 30d
+  callbacks: ["langfuse_otel", "prometheus"]
+
+model_list:
+  - model_name: fast
+    litellm_params:
+      model: openrouter/z-ai/glm-5.3-flash
+      drop_params: true
+  - model_name: code
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-pro
+      drop_params: true
+  - model_name: reason
+    litellm_params:
+      model: openrouter/anthropic/claude-sonnet-5.5
+      drop_params: true
