@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: litellm
+  namespace: llm-gateway
+spec:
+  endpoints:
+    - port: http
+      path: /metrics/
+      interval: 60s
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'litellm_.*|up'
+          action: keep
+  namespaceSelector:
+    matchNames:
+      - llm-gateway
+  selector:
+    matchLabels:
+      app: litellm
