@@ -5,15 +5,6 @@ metadata:
   namespace: monitoring
 spec:
   groups:
-    - name: playbook-test
-      rules:
-        - alert: PlaybookTest
-          expr: vector(1)
-          for: 0m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Test alert from playbook 05, synced from Git"
     - name: lab
       rules:
         - alert: LabSilent
@@ -51,3 +42,17 @@ spec:
             severity: warning
           annotations:
             summary: "the root filesystem on a node is less than 15% free"
+        - alert: NodeNotReady
+          expr: kube_node_status_condition{condition="Ready", status="true", cluster="homelab"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "a k3s node has been NotReady for 5 minutes"
+        - alert: PodCrashLooping
+          expr: increase(kube_pod_container_status_restarts_total{cluster="homelab"}[15m]) > 3
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "a container has restarted more than 3 times in 15 minutes"
