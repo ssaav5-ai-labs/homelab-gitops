@@ -47,6 +47,34 @@ spec:
           volumeMounts:
             - name: tools
               mountPath: /tools
+        - name: seed
+          image: nousresearch/hermes-agent:v0.22.7@sha256:a86ace4d4177485ce136c1160ad65a641211268e733e7ea6078fe6761bacb06e
+          env:
+            - name: HERMES_HOME
+              value: /opt/data
+          command:
+            - sh
+            - -c
+            - |
+              # skills.external_dirs is set here (not in the managed config) because
+              # v0.22.7's skill loader reads it only from the user config. Re-applied at
+              # every start so the git-synced skills directory always wins on restart.
+              hermes config set skills.external_dirs '["/git/current/hermes-skills"]'
+          volumeMounts:
+            - name: hermes-data
+              mountPath: /opt/data
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
+                - SETUID
+                - SETGID
+                - KILL
         - name: git-sync
           image: registry.k8s.io/git-sync/git-sync:v4.8.0
           restartPolicy: Always
