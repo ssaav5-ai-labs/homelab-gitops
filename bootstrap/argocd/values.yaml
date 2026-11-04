@@ -24,7 +24,7 @@ server:
       cpu: 25m
       memory: 64Mi
     limits:
-      memory: 256Mi
+      memory: 192Mi
 
 dex:
   enabled: false
@@ -47,17 +47,17 @@ controller:
   resources:
     requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 704Mi
     limits:
-      memory: 768Mi
+      memory: 1280Mi
 
 redis:
   resources:
     requests:
       cpu: 25m
-      memory: 32Mi
+      memory: 16Mi
     limits:
-      memory: 128Mi
+      memory: 144Mi
 
 repoServer:
   metrics:
@@ -93,6 +93,6 @@ repoServer:
   resources:
     requests:
       cpu: 50m
-      memory: 128Mi
+      memory: 160Mi
     limits:
       memory: 512Mi
