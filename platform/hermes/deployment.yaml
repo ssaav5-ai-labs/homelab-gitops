@@ -49,6 +49,12 @@ spec:
               mountPath: /tools
         - name: seed
           image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75
+          securityContext:
+            capabilities:
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
           command:
             - sh
             - -c
