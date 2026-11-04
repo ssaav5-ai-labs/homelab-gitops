@@ -49,7 +49,7 @@ if [[ -f apps/argocd.yaml ]]; then
 
   echo ""
   echo "=== Checking HERMES_IMAGE vs platform/hermes/deployment.yaml ==="
-  HERMES_DEPLOYED=$(grep 'image:' platform/hermes/deployment.yaml | head -1 | sed 's/.*image:\s*//')
+  HERMES_DEPLOYED=$(grep 'nousresearch/hermes-agent' platform/hermes/deployment.yaml | sed 's/.*image:\s*//')
   if [[ "$HERMES_DEPLOYED" != "$HERMES_IMAGE" ]]; then
     echo "FAIL: HERMES_IMAGE=$HERMES_IMAGE but deployment.yaml image=$HERMES_DEPLOYED" >&2
     FAIL=1
