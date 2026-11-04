@@ -63,9 +63,16 @@ collectors:
       resources:
         requests:
           cpu: 50m
-          memory: 160Mi
+          memory: 416Mi
         limits:
-          memory: 512Mi
+          memory: 832Mi
+    configReloader:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          memory: 144Mi
 
   alloy-logs:
     presets: [filesystem-log-reader, daemonset]
@@ -73,9 +80,16 @@ collectors:
       resources:
         requests:
           cpu: 10m
-          memory: 64Mi
+          memory: 96Mi
         limits:
-          memory: 256Mi
+          memory: 208Mi
+    configReloader:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          memory: 144Mi
 
   alloy-singleton:
     presets: [deployment]
@@ -84,18 +98,24 @@ collectors:
       resources:
         requests:
           cpu: 10m
-          memory: 64Mi
+          memory: 96Mi
         limits:
-          memory: 256Mi
+          memory: 208Mi
+    configReloader:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          memory: 144Mi
 
 alloy-operator:
-  alloy:
-    resources:
-      requests:
-        cpu: 10m
-        memory: 32Mi
-      limits:
-        memory: 128Mi
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
 
 telemetryServices:
   kube-state-metrics:
@@ -103,15 +123,15 @@ telemetryServices:
     resources:
       requests:
         cpu: 10m
-        memory: 32Mi
+        memory: 48Mi
       limits:
-        memory: 128Mi
+        memory: 176Mi
 
   node-exporter:
     deploy: true
     resources:
       requests:
         cpu: 10m
-        memory: 16Mi
+        memory: 32Mi
       limits:
-        memory: 64Mi
+        memory: 160Mi
