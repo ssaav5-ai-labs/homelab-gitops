@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  namespace: hermes
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      serviceAccountName: hermes
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k3s-02
+      initContainers:
+        - name: tools
+          image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              KUBECTL_VERSION=v1.36.5
+              curl -fsSLo /tmp/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+              curl -fsSLo /tmp/kubectl.sha256 "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+              cd /tmp
+              echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c
+              chmod +x /tmp/kubectl
+              cp /tmp/kubectl /tools/kubectl
+          volumeMounts:
+            - name: tools
+              mountPath: /tools
+        - name: seed
+          image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75
+          command:
+            - sh
+            - -c
+            - |
+              cp /soul/SOUL.md /opt/data/SOUL.md
+              mkdir -p /opt/data/work
+          volumeMounts:
+            - name: hermes-data
+              mountPath: /opt/data
+            - name: hermes-soul
+              mountPath: /soul
+        - name: git-sync
+          image: registry.k8s.io/git-sync/git-sync:v4.8.0
+          restartPolicy: Always
+          args:
+            - --repo=https://github.com/ssaav5-ai-labs/homelab-agents
+            - --ref=main
+            - --root=/git
+            - --link=current
+            - --period=300s
+            - --max-sync-failures=-1
+          volumeMounts:
+            - name: skills
+              mountPath: /git
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 96Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        - name: hermes
+          image: nousresearch/hermes-agent:v0.22.7@sha256:a86ace4d4177485ce136c1160ad65a641211268e733e7ea6078fe6761bacb06e
+          args: ["gateway", "run"]
+          env:
+            - name: HERMES_MANAGED_DIR
+              value: /etc/hermes-managed
+          envFrom:
+            - secretRef:
+                name: hermes
+          ports:
+            - containerPort: 8644
+              name: webhook
+          volumeMounts:
+            - name: hermes-data
+              mountPath: /opt/data
+            - name: hermes-managed
+              mountPath: /etc/hermes-managed
+              readOnly: true
+            - name: skills
+              mountPath: /git
+              readOnly: true
+            - name: tools
+              mountPath: /usr/local/bin/kubectl
+              subPath: kubectl
+          resources:
+            requests:
+              cpu: 100m
+              memory: 768Mi
+            limits:
+              memory: 1536Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
+                - SETUID
+                - SETGID
+                - KILL
+      volumes:
+        - name: hermes-data
+          persistentVolumeClaim:
+            claimName: hermes-data
+        - name: hermes-managed
+          configMap:
+            name: hermes-managed
+        - name: hermes-soul
+          configMap:
+            name: hermes-soul
+        - name: skills
+          emptyDir: {}
+        - name: tools
+          emptyDir: {}

@@ -51,3 +51,15 @@ jobs:
           helm template monitoring grafana/k8s-monitoring --version "$K8S_MON_VERSION" -n monitoring -f platform/monitoring/chart-values.yaml > /tmp/monitoring.yaml
           curl -fsSL https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz | tar xz
           ./kubeconform -strict -summary -ignore-missing-schemas /tmp/argocd.yaml /tmp/monitoring.yaml
+
+      - name: kustomize-build + kubeconform
+        run: |
+          curl -fsSL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.7.1/kustomize_v5.7.1_linux_amd64.tar.gz | tar xz
+          touch /tmp/ksops-bin && chmod +x /tmp/ksops-bin
+          cat > /tmp/ksops-bin << 'DONE'
+          #!/bin/sh
+          cat /dev/stdin
+          DONE
+          export PATH="/tmp:$PATH"
+          ./kustomize build --enable-alpha-plugins platform/hermes > /tmp/hermes.yaml
+          ./kubeconform -strict -summary -ignore-missing-schemas /tmp/hermes.yaml

@@ -1,0 +1,45 @@
+model:
+  provider: lab-gateway
+  default: code
+providers:
+  lab-gateway:
+    api: http://litellm.llm-gateway.svc:4000/v1
+    api_key: "${LAB_GATEWAY_KEY}"
+    session_affinity_header: x-litellm-session-id
+    discover_models: false
+    models: [fast, code]
+auxiliary:
+  compression: {provider: lab-gateway, model: fast}
+  title_generation: {provider: lab-gateway, model: fast}
+  approval: {provider: lab-gateway, model: fast}
+agent:
+  disabled_toolsets: [browser, computer_use, image_gen, video_gen, tts, connections, x_search]
+terminal:
+  backend: local
+  cwd: /opt/data/work
+  timeout: 120
+approvals:
+  mode: manual
+  timeout: 300
+  cron_mode: deny
+  single_query_mode: deny
+  unattended_mode: deny
+  deny:
+    - kubectl delete*
+    - kubectl apply*
+    - kubectl edit*
+    - kubectl patch*
+    - kubectl scale*
+    - kubectl drain*
+    - kubectl cordon*
+    - git push*
+    - "*curl*|*sh*"
+    - "*wget*|*sh*"
+command_allowlist: []
+skills:
+  external_dirs: [/git/current/hermes-skills]
+  write_approval: true
+  guard_agent_created: true
+security:
+  redact_secrets: true
+  allow_private_urls: false

@@ -15,3 +15,22 @@ spec:
   clusterResourceWhitelist:
     - group: '*'
       kind: '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: agents
+  namespace: argocd
+spec:
+  sourceRepos:
+    - https://github.com/ssaav5-ai-labs/homelab-gitops.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: hermes
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: Namespace
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
