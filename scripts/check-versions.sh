@@ -46,6 +46,46 @@ if [[ -f apps/argocd.yaml ]]; then
   else
     echo "OK: PROM_OPERATOR_CRDS_CHART_VERSION=$PROM_OPERATOR_CRDS_CHART_VERSION matches apps/prometheus-operator-crds.yaml"
   fi
+
+  echo ""
+  echo "=== Checking HERMES_IMAGE vs platform/hermes/deployment.yaml ==="
+  HERMES_DEPLOYED=$(grep 'image:' platform/hermes/deployment.yaml | head -1 | sed 's/.*image:\s*//')
+  if [[ "$HERMES_DEPLOYED" != "$HERMES_IMAGE" ]]; then
+    echo "FAIL: HERMES_IMAGE=$HERMES_IMAGE but deployment.yaml image=$HERMES_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: HERMES_IMAGE=$HERMES_IMAGE matches deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking GIT_SYNC_IMAGE vs platform/hermes/deployment.yaml ==="
+  GIT_SYNC_DEPLOYED=$(grep 'registry.k8s.io/git-sync' platform/hermes/deployment.yaml | sed 's/.*image:\s*//')
+  if [[ "$GIT_SYNC_DEPLOYED" != "$GIT_SYNC_IMAGE" ]]; then
+    echo "FAIL: GIT_SYNC_IMAGE=$GIT_SYNC_IMAGE but deployment.yaml image=$GIT_SYNC_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: GIT_SYNC_IMAGE=$GIT_SYNC_IMAGE matches deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking KUBECTL_VERSION vs platform/hermes/deployment.yaml ==="
+  KUBECTL_DEPLOYED=$(grep 'KUBECTL_VERSION=' platform/hermes/deployment.yaml | sed 's/.*KUBECTL_VERSION=//' | tr -d ';')
+  if [[ "$KUBECTL_DEPLOYED" != "$KUBECTL_VERSION" ]]; then
+    echo "FAIL: KUBECTL_VERSION=$KUBECTL_VERSION but deployment.yaml version=$KUBECTL_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: KUBECTL_VERSION=$KUBECTL_VERSION matches deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking POSTGRES_IMAGE vs platform/llm-gateway/postgres.yaml ==="
+  POSTGRES_DEPLOYED=$(grep 'image:' platform/llm-gateway/postgres.yaml | sed 's/.*image:\s*//')
+  if [[ "$POSTGRES_DEPLOYED" != "$POSTGRES_IMAGE" ]]; then
+    echo "FAIL: POSTGRES_IMAGE=$POSTGRES_IMAGE but postgres.yaml image=$POSTGRES_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: POSTGRES_IMAGE=$POSTGRES_IMAGE matches postgres.yaml"
+  fi
 else
   echo "apps/argocd.yaml does not exist yet (step 7); skipping version checks."
 fi
