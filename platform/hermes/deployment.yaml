@@ -70,6 +70,7 @@ spec:
             - --link=current
             - --period=300s
             - --max-sync-failures=-1
+            - --git-config=safe.directory:*
           volumeMounts:
             - name: skills
               mountPath: /git

@@ -1,6 +1,7 @@
 model:
   provider: lab-gateway
   default: code
+  base_url: http://litellm.llm-gateway.svc:4000/v1
 providers:
   lab-gateway:
     api: http://litellm.llm-gateway.svc:4000/v1
