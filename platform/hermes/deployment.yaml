@@ -47,24 +47,6 @@ spec:
           volumeMounts:
             - name: tools
               mountPath: /tools
-        - name: seed
-          image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75
-          securityContext:
-            runAsUser: 1000
-            capabilities:
-              drop:
-                - ALL
-          command:
-            - sh
-            - -c
-            - |
-              cat /soul/SOUL.md > /opt/data/SOUL.md
-              mkdir -p /opt/data/work
-          volumeMounts:
-            - name: hermes-data
-              mountPath: /opt/data
-            - name: hermes-soul
-              mountPath: /soul
         - name: git-sync
           image: registry.k8s.io/git-sync/git-sync:v4.8.0
           restartPolicy: Always
@@ -115,6 +97,9 @@ spec:
             - name: tools
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
+            - name: hermes-soul
+              mountPath: /opt/data/SOUL.md
+              subPath: SOUL.md
           resources:
             requests:
               cpu: 100m
