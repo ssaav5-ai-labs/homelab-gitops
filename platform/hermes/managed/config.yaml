@@ -38,7 +38,9 @@ approvals:
     - "*wget*|*sh*"
 command_allowlist: []
 skills:
-  external_dirs: [/git/current/hermes-skills]
+  # external_dirs is NOT managed — v0.22.7 ignores it in managed scope.
+  # It is set in /opt/data/config.yaml by the seed init container at every start
+  # so Git wins on restart.
   write_approval: true
   guard_agent_created: true
 security:
