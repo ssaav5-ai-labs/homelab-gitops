@@ -10,7 +10,7 @@ spec:
       interval: 60s
       metricRelabelings:
         - sourceLabels: [__name__]
-          regex: 'litellm_proxy_failed_requests_metric_total|litellm_proxy_total_requests_metric_total|litellm_remaining_requests_metric|litellm_remaining_tokens_metric|litellm_request_total_latency_metric_bucket|litellm_request_total_latency_metric_count|litellm_request_total_latency_metric_sum|up'
+          regex: 'litellm_proxy_failed_requests_metric_total|litellm_proxy_total_requests_metric_total|litellm_remaining_requests_metric|litellm_remaining_tokens_metric|litellm_request_total_latency_metric_bucket|litellm_request_total_latency_metric_count|litellm_request_total_latency_metric_sum|litellm_remaining_api_key_budget_metric|up'
           action: keep
   namespaceSelector:
     matchNames:

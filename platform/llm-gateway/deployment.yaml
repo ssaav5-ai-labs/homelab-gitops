@@ -27,6 +27,17 @@ spec:
             - secretRef:
                 name: llm-gateway
           env:
+            - name: DATABASE_HOST
+              value: postgres
+            - name: DATABASE_USERNAME
+              value: litellm
+            - name: DATABASE_NAME
+              value: litellm
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: llm-gateway
+                  key: POSTGRES_PASSWORD
             - name: LANGFUSE_OTEL_HOST
               value: https://cloud.langfuse.com
           ports:
@@ -48,7 +59,7 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 704Mi
+              memory: 768Mi
             limits:
               memory: 1Gi
       volumes:
