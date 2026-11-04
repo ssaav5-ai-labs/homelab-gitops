@@ -50,16 +50,15 @@ spec:
         - name: seed
           image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75
           securityContext:
+            runAsUser: 1000
             capabilities:
-              add:
-                - CHOWN
-                - DAC_OVERRIDE
-                - FOWNER
+              drop:
+                - ALL
           command:
             - sh
             - -c
             - |
-              cp /soul/SOUL.md /opt/data/SOUL.md
+              cat /soul/SOUL.md > /opt/data/SOUL.md
               mkdir -p /opt/data/work
           volumeMounts:
             - name: hermes-data
