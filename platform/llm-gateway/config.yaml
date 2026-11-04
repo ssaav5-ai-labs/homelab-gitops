@@ -3,6 +3,8 @@
 # The fallback has a `local` (Ollama) alias; the cluster does not.
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
+  database_connection_pool_limit: 5
+  allow_requests_on_db_unavailable: false
 
 litellm_settings:
   max_budget: 115
