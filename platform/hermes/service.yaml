@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-webhook
+  namespace: hermes
+spec:
+  type: ClusterIP
+  selector:
+    app: hermes
+  ports:
+    - name: webhook
+      port: 8644
+      targetPort: webhook
