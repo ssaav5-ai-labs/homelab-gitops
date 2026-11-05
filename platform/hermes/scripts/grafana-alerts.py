@@ -95,12 +95,20 @@ def fetch_alerts(url, token):
     return data
 
 
-def report_error(path, state, exc):
+def handle_error(path, state, message):
+    """Report an error at most once per ERROR_REPORT_SECONDS.
+
+    Returns a process exit code: 1 on the first error in a window (so Hermes
+    delivers an error alert), 0 on a rate-limited error (a quiet tick with no
+    output and no wakeAgent gate).
+    """
     now = time.time()
     if now - state.get("last_error_ts", 0.0) >= ERROR_REPORT_SECONDS:
-        _log_error("grafana-alerts: failed to fetch alerts: %s" % exc)
+        _log_error("grafana-alerts: " + message)
         state["last_error_ts"] = now
         save_state(path, state)
+        return 1
+    return 0
 
 
 def main(argv=None):
@@ -131,17 +139,13 @@ def main(argv=None):
         url = os.environ.get("GRAFANA_ALERTS_URL", "")
         token = os.environ.get("GRAFANA_ALERTS_TOKEN", "")
         if not url:
-            _log_error("grafana-alerts: GRAFANA_ALERTS_URL is not set")
-            return 2
+            return handle_error(args.state, state, "GRAFANA_ALERTS_URL is not set")
         if not token:
-            _log_error("grafana-alerts: GRAFANA_ALERTS_TOKEN is not set")
-            return 2
+            return handle_error(args.state, state, "GRAFANA_ALERTS_TOKEN is not set")
         try:
             alerts = fetch_alerts(url, token)
         except (urllib.error.URLError, OSError, ValueError, json.JSONDecodeError) as exc:
-            report_error(args.state, state, exc)
-            print(json.dumps({"wakeAgent": False}))
-            return 0
+            return handle_error(args.state, state, "failed to fetch alerts: %s" % exc)
 
     summaries = [s for s in (summarize_alert(a) for a in alerts) if s]
     current = set(s["fingerprint"] for s in summaries)
