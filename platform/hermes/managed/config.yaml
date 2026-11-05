@@ -43,6 +43,10 @@ skills:
   # so Git wins on restart.
   write_approval: true
   guard_agent_created: true
+slack:
+  # Unauthorized DMs are silently ignored (rather than the default "pair" prompt),
+  # since only the operator's user ID is allowed in SLACK_ALLOWED_USERS.
+  unauthorized_dm_behavior: ignore
 security:
   redact_secrets: true
   allow_private_urls: false
