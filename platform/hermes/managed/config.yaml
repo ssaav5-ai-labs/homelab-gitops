@@ -19,6 +19,22 @@ terminal:
   backend: local
   cwd: /opt/data/work
   timeout: 120
+  env_passthrough:
+    - GRAFANA_ALERTS_TOKEN
+platforms:
+  webhook:
+    enabled: true
+    extra:
+      port: 8644
+      secret: "${WEBHOOK_SECRET}"
+      routes:
+        alerts:
+          secret: "${WEBHOOK_SECRET}"
+          prompt: |
+            New alert received from the in-lab alert manager:
+            {__raw__}
+          skills: [alert-triage]
+          deliver: slack
 approvals:
   mode: manual
   timeout: 300
