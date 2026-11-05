@@ -60,6 +60,34 @@ else
   FAIL=1
 fi
 
+# 5. Missing URL -> non-zero exit + an error line, and no wakeAgent JSON.
+ERRSTATE="$TMP/err-state.json"
+if env -u GRAFANA_ALERTS_URL -u GRAFANA_ALERTS_TOKEN \
+     python3 "$SCRIPT" --state "$ERRSTATE" >"$TMP/err-out1.txt" 2>"$TMP/err-err1.txt"; then
+  echo "FAIL: missing URL should exit non-zero" >&2
+  FAIL=1
+elif ! grep -q "GRAFANA_ALERTS_URL is not set" "$TMP/err-err1.txt"; then
+  echo "FAIL: missing URL should print an error line" >&2
+  FAIL=1
+elif [[ -s "$TMP/err-out1.txt" ]]; then
+  echo "FAIL: missing URL should not print a wakeAgent gate" >&2
+  FAIL=1
+else
+  echo "OK: missing URL -> non-zero exit + error line"
+fi
+
+# 6. Second error within the window -> quiet (exit 0, no output).
+if ! env -u GRAFANA_ALERTS_URL -u GRAFANA_ALERTS_TOKEN \
+       python3 "$SCRIPT" --state "$ERRSTATE" >"$TMP/err-out2.txt" 2>"$TMP/err-err2.txt"; then
+  echo "FAIL: rate-limited error should exit 0" >&2
+  FAIL=1
+elif [[ -s "$TMP/err-out2.txt" ]] || [[ -s "$TMP/err-err2.txt" ]]; then
+  echo "FAIL: rate-limited error should be quiet" >&2
+  FAIL=1
+else
+  echo "OK: rate-limited error -> quiet"
+fi
+
 if (( FAIL )); then
   echo ""
   echo "grafana-alerts test FAILED." >&2

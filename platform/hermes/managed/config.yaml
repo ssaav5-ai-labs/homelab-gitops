@@ -20,6 +20,7 @@ terminal:
   cwd: /opt/data/work
   timeout: 120
   env_passthrough:
+    - GRAFANA_ALERTS_URL
     - GRAFANA_ALERTS_TOKEN
 platforms:
   webhook:
