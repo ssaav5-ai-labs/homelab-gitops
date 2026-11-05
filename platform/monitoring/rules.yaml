@@ -63,3 +63,12 @@ spec:
             severity: critical
           annotations:
             summary: "the LiteLLM gateway is down or not being scraped for 5 minutes"
+    - name: playbook-test
+      rules:
+        - alert: PlaybookTest
+          expr: vector(1)
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Test alert from playbook 06"
