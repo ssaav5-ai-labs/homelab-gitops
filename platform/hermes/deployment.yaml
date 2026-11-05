@@ -56,6 +56,8 @@ spec:
             - sh
             - -c
             - |
+              # terminal.cwd points at /opt/data/work; create it before Hermes starts.
+              mkdir -p /opt/data/work
               # skills.external_dirs is set here (not in the managed config) because
               # v0.22.7's skill loader reads it only from the user config. Re-applied at
               # every start so the git-synced skills directory always wins on restart.
