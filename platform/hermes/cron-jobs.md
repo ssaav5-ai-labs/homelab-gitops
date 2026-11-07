@@ -16,7 +16,8 @@ Polls Grafana Cloud Alertmanager every 2 minutes via a pre-check script
 (`grafana-alerts.py`) that only wakes the agent when there are **new** firing alerts
 (fingerprint-tagged in `/opt/data/cron-state/grafana-alerts.json`). When it wakes, the
 agent runs the `alert-triage` skill and the diagnosis is delivered to `#homelab-alerts`
-(`slack:C0CD531B6LX`).
+(`slack:C0CD531B6LX`). The URL is filtered to `grafana_folder="homelab"` so only our
+Git-synced rules are polled (Grafana Asserts auto-generated alerts are excluded).
 
 ```bash
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "every 2m" \
