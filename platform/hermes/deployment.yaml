@@ -128,7 +128,7 @@ spec:
             - name: HERMES_MANAGED_DIR
               value: /etc/hermes-managed
             - name: GRAFANA_ALERTS_URL
-              value: "https://yellowhickory60.grafana.net/api/alertmanager/grafana/api/v2/alerts?active=true&silenced=false&inhibited=false"
+              value: "https://yellowhickory60.grafana.net/api/alertmanager/grafana/api/v2/alerts?active=true&silenced=false&inhibited=false&filter=grafana_folder%3D%22homelab%22"
           envFrom:
             - secretRef:
                 name: hermes
