@@ -63,3 +63,24 @@ spec:
             severity: critical
           annotations:
             summary: "the LiteLLM gateway is down or not being scraped for 5 minutes"
+        - alert: HermesDown
+          expr: kube_deployment_status_replicas_available{cluster="homelab", namespace="hermes", deployment="hermes"} == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "chat and alert diagnosis are off; plain Slack alerts still work"
+        - alert: HermesBudgetLow
+          expr: litellm_remaining_api_key_budget_metric{cluster="homelab", api_key_alias="hermes"} < 1
+          for: 15m
+          labels:
+            severity: info
+          annotations:
+            summary: "the Hermes gateway key has less than 1 USD of budget remaining"
+        - alert: PostgresDown
+          expr: kube_statefulset_status_replicas_ready{namespace="llm-gateway", statefulset="postgres"} == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "the gateway's Postgres database is down: every virtual key fails without it"
