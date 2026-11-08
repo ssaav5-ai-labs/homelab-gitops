@@ -50,12 +50,12 @@ spec:
           annotations:
             summary: "a k3s node has been NotReady for 5 minutes"
         - alert: PodCrashLooping
-          expr: increase(kube_pod_container_status_restarts_total{cluster="homelab"}[15m]) > 3
+          expr: max_over_time(kube_pod_container_status_waiting_reason{cluster="homelab", reason="CrashLoopBackOff"}[5m]) >= 1
           for: 15m
           labels:
             severity: warning
           annotations:
-            summary: "a container has restarted more than 3 times in 15 minutes"
+            summary: "a container is in CrashLoopBackOff"
         - alert: LiteLLMDown
           expr: up{cluster="homelab", namespace="llm-gateway"} == 0 or absent(up{cluster="homelab", namespace="llm-gateway"})
           for: 5m
