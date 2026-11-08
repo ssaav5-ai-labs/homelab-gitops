@@ -64,7 +64,7 @@ spec:
               memory: 192Mi
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
