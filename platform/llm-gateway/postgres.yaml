@@ -59,9 +59,9 @@ spec:
           resources:
             requests:
               cpu: 20m
-              memory: 96Mi
+              memory: 80Mi
             limits:
-              memory: 256Mi
+              memory: 192Mi
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
