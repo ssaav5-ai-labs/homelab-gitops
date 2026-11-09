@@ -4,3 +4,5 @@ metadata:
   name: hermes
   labels:
     pod-security.kubernetes.io/enforce: baseline
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=false
