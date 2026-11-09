@@ -94,6 +94,16 @@ collectors:
   alloy-singleton:
     presets: [deployment]
     replicas: 1
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: homelab.io/size
+                  operator: In
+                  values:
+                    - large
     alloy:
       resources:
         requests:
@@ -120,6 +130,16 @@ alloy-operator:
 telemetryServices:
   kube-state-metrics:
     deploy: true
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: homelab.io/size
+                  operator: In
+                  values:
+                    - large
     resources:
       requests:
         cpu: 10m

@@ -36,6 +36,16 @@ applicationSet:
   replicas: 0
 
 controller:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: homelab.io/size
+                operator: In
+                values:
+                  - large
   metrics:
     enabled: true
     serviceMonitor:
@@ -60,6 +70,16 @@ redis:
       memory: 144Mi
 
 repoServer:
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: homelab.io/size
+                operator: In
+                values:
+                  - large
   metrics:
     enabled: true
     serviceMonitor:
