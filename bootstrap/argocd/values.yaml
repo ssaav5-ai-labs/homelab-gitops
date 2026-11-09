@@ -1,5 +1,5 @@
 global:
-  domain: argocd.192.168.86.211.nip.io
+  domain: argocd.192.168.86.210.nip.io
 
 configs:
   cm:
