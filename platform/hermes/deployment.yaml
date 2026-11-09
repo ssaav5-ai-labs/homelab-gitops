@@ -25,10 +25,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: kubernetes.io/hostname
+                  - key: homelab.io/size
                     operator: In
                     values:
-                      - k3s-02
+                      - large
       initContainers:
         - name: tools
           image: curlimages/curl@sha256:3b8fde20978e330b401837f24b871ebe2c8d14ff7f07b87990bcd832588a1a75

@@ -13,6 +13,16 @@ spec:
       labels:
         app: litellm
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: homelab.io/size
+                    operator: In
+                    values:
+                      - large
       containers:
         - name: litellm
           image: litellm/litellm:v1.106.6
