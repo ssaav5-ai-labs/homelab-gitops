@@ -26,7 +26,9 @@ for app_file in apps/*.yaml; do
     continue
   fi
 
-  if grep -q 'resources-finalizer.argocd.argoproj.io' "$app_file"; then
+  # Require the resources finalizer as one item in `metadata.finalizers`, but
+  # allow additional finalizers (e.g. Argo CD's pre-delete finalizers) alongside it.
+  if grep -qE '^[[:space:]]*-[[:space:]]*resources-finalizer\.argocd\.argoproj\.io[[:space:]]*$' "$app_file"; then
     echo "OK: $app_file has resources-finalizer.argocd.argoproj.io"
   else
     echo "FAIL: $app_file ($name) is missing resources-finalizer.argocd.argoproj.io" >&2
