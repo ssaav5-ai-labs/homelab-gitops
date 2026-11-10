@@ -28,6 +28,13 @@ kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "every 2m" 
   --name grafana-alerts
 ```
 
+Toolsets: a cron job has no `--toolsets` flag in Hermes v0.22.7 — it inherits the
+toolsets declared by its skills' `requires_toolsets` frontmatter. This job runs
+`alert-triage` (0.2.0), which declares `requires_toolsets: [terminal, mcp-crews]`, so it
+gets both the terminal and the crews MCP tools. A job that requires a toolset whose
+server never connected is blocked before any model call (`blocked_config`); `hermes cron
+doctor` surfaces it.
+
 Env wiring:
 
 - `GRAFANA_ALERTS_URL` — in `managed/.env` (non-secret).
@@ -39,6 +46,7 @@ Verify:
 ```bash
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron list
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron run grafana-alerts
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron doctor
 ```
 
 ## Webhook (future in-lab alert manager)
