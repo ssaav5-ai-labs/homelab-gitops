@@ -67,3 +67,16 @@ slack:
 security:
   redact_secrets: true
   allow_private_urls: false
+mcp_servers:
+  crews:
+    url: http://sre-crews.sre.svc:8000/mcp
+    headers:
+      Authorization: "Bearer ${CREWS_MCP_TOKEN}"
+    trust: untrusted
+    timeout: 300
+    connect_timeout: 15
+    sampling: {enabled: false}
+    tools:
+      include: [investigate_alert, weekly_capacity_report, find_runbook]
+      resources: false
+      prompts: false
