@@ -79,6 +79,8 @@ spec:
           env:
             - name: GRAFANA_URL
               value: "https://yellowhickory60.grafana.net"
+            - name: GRAFANA_USAGE_STATS
+              value: "disabled"
             - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
               valueFrom:
                 secretKeyRef:
