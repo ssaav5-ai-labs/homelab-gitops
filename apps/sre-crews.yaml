@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sre-crews
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: agents
+  source:
+    repoURL: https://github.com/ssaav5-ai-labs/homelab-gitops.git
+    targetRevision: main
+    path: platform/sre-crews
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sre
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

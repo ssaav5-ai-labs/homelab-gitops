@@ -1,0 +1,23 @@
+port = "8002"
+bind_address = "127.0.0.1"
+read_only = true
+toolsets = ["core"]
+cluster_provider_strategy = "in-cluster"
+list_output = "table"
+stateless = true
+max_in_flight = 4
+max_backend_response_bytes = 1048576
+max_result_bytes = 262144
+
+[http]
+max_body_bytes = 1048576
+
+[[denied_resources]]
+group = ""
+version = "v1"
+kind = "Secret"
+
+[[denied_resources]]
+group = ""
+version = "v1"
+kind = "ConfigMap"

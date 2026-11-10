@@ -1,0 +1,220 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sre-crews
+  namespace: sre
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sre-crews
+  template:
+    metadata:
+      labels:
+        app: sre-crews
+    spec:
+      serviceAccountName: sre-crews
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: homelab.io/size
+                    operator: In
+                    values:
+                      - large
+      initContainers:
+        - name: k8s-mcp
+          image: quay.io/containers/kubernetes_mcp_server:v0.1.2@sha256:c289505b06079d7f265a6fef977ce1abbfbbb4271772db17db5b58edbf44c255
+          restartPolicy: Always
+          args:
+            - --config
+            - /etc/k8s-mcp/config.toml
+          ports:
+            - containerPort: 8002
+              name: mcp
+          volumeMounts:
+            - name: k8s-mcp-config
+              mountPath: /etc/k8s-mcp/config.toml
+              subPath: k8s-mcp.toml
+              readOnly: true
+            - name: k8s-mcp-token
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 192Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+        - name: grafana-mcp
+          image: grafana/mcp-grafana:2.2.0@sha256:697336440e34878f8e0b26a69675db8d7e97b4d0daec25ec5441c85ac6c60e81
+          restartPolicy: Always
+          args:
+            - -t
+            - streamable-http
+            - --address
+            - 127.0.0.1:8001
+            - --disable-write
+            - --enabled-tools
+            - datasource,prometheus,loki,alerting
+          env:
+            - name: GRAFANA_URL
+              value: "https://yellowhickory60.grafana.net"
+            - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sre-crews
+                  key: GRAFANA_SERVICE_ACCOUNT_TOKEN
+          ports:
+            - containerPort: 8001
+              name: mcp
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 48Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+        - name: git-sync
+          image: registry.k8s.io/git-sync/git-sync:v4.8.0
+          restartPolicy: Always
+          env:
+            - name: HOME
+              value: /tmp
+          args:
+            - --repo=https://github.com/ssaav5-ai-labs/handbook
+            - --ref=main
+            - --root=/handbook
+            - --link=current
+            - --period=3600s
+            - --depth=1
+            - --max-sync-failures=-1
+            - --git-config=safe.directory:*
+          volumeMounts:
+            - name: handbook
+              mountPath: /handbook
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 96Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65533
+            runAsGroup: 65533
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      containers:
+        - name: crews
+          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-c3bc01f@sha256:70076cb2ce73ebb001d7f4690d8e3501e632e5752e1c2b3271889283762f9c06
+          env:
+            - name: LAB_GATEWAY_URL
+              value: http://litellm.llm-gateway.svc:4000
+            - name: CREWS_GATEWAY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sre-crews
+                  key: CREWS_GATEWAY_KEY
+            - name: CREWS_MCP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: sre-crews
+                  key: CREWS_MCP_TOKEN
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          volumeMounts:
+            - name: handbook
+              mountPath: /handbook
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 384Mi
+            limits:
+              memory: 768Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: handbook
+          emptyDir: {}
+        - name: k8s-mcp-config
+          configMap:
+            name: k8s-mcp
+        - name: k8s-mcp-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+              - downwardAPI:
+                  items:
+                    - path: namespace
+                      fieldRef:
+                        apiVersion: v1
+                        fieldPath: metadata.namespace
+        - name: tmp
+          emptyDir: {}
