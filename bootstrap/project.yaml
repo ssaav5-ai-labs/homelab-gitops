@@ -27,6 +27,8 @@ spec:
   destinations:
     - server: https://kubernetes.default.svc
       namespace: hermes
+    - server: https://kubernetes.default.svc
+      namespace: sre
   clusterResourceWhitelist:
     - group: '*'
       kind: Namespace

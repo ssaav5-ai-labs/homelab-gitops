@@ -86,6 +86,36 @@ if [[ -f apps/argocd.yaml ]]; then
   else
     echo "OK: POSTGRES_IMAGE=$POSTGRES_IMAGE matches postgres.yaml"
   fi
+
+  echo ""
+  echo "=== Checking SRE_CREWS_IMAGE vs platform/sre-crews/deployment.yaml ==="
+  SRE_CREWS_DEPLOYED=$(grep 'ghcr.io/ssaav5-ai-labs/sre-crews' platform/sre-crews/deployment.yaml | sed 's/.*image:\s*//')
+  if [[ "$SRE_CREWS_DEPLOYED" != "$SRE_CREWS_IMAGE" ]]; then
+    echo "FAIL: SRE_CREWS_IMAGE=$SRE_CREWS_IMAGE but deployment.yaml image=$SRE_CREWS_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: SRE_CREWS_IMAGE=$SRE_CREWS_IMAGE matches deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking K8S_MCP_IMAGE vs platform/sre-crews/deployment.yaml ==="
+  K8S_MCP_DEPLOYED=$(grep 'quay.io/containers/kubernetes_mcp_server' platform/sre-crews/deployment.yaml | sed 's/.*image:\s*//')
+  if [[ "$K8S_MCP_DEPLOYED" != "$K8S_MCP_IMAGE" ]]; then
+    echo "FAIL: K8S_MCP_IMAGE=$K8S_MCP_IMAGE but deployment.yaml image=$K8S_MCP_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: K8S_MCP_IMAGE=$K8S_MCP_IMAGE matches deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking GRAFANA_MCP_IMAGE vs platform/sre-crews/deployment.yaml ==="
+  GRAFANA_MCP_DEPLOYED=$(grep 'grafana/mcp-grafana' platform/sre-crews/deployment.yaml | sed 's/.*image:\s*//')
+  if [[ "$GRAFANA_MCP_DEPLOYED" != "$GRAFANA_MCP_IMAGE" ]]; then
+    echo "FAIL: GRAFANA_MCP_IMAGE=$GRAFANA_MCP_IMAGE but deployment.yaml image=$GRAFANA_MCP_DEPLOYED" >&2
+    FAIL=1
+  else
+    echo "OK: GRAFANA_MCP_IMAGE=$GRAFANA_MCP_IMAGE matches deployment.yaml"
+  fi
 else
   echo "apps/argocd.yaml does not exist yet (step 7); skipping version checks."
 fi
