@@ -144,7 +144,7 @@ spec:
             readOnlyRootFilesystem: true
       containers:
         - name: crews
-          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-cc644fb@sha256:ebd3b69089459af9d0dd3e9c440c9e134f29dc9302d9e644ef274494e4926d69
+          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-25a5b53@sha256:8a8d92fc2d7cc8a8855400970bb971436fc117bd39366595f55f7e1283a1e961
           env:
             - name: LAB_GATEWAY_URL
               value: http://litellm.llm-gateway.svc:4000
