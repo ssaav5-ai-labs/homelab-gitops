@@ -3,11 +3,11 @@ bind_address = "127.0.0.1"
 read_only = true
 toolsets = ["core"]
 cluster_provider_strategy = "in-cluster"
-list_output = "table"
+list_output = "yaml"
 stateless = true
 max_in_flight = 4
-max_backend_response_bytes = 1048576
-max_result_bytes = 262144
+max_backend_response_bytes = 4194304
+max_result_bytes = 4194304
 
 [http]
 max_body_bytes = 1048576
