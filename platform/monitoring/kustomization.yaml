@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - rules.yaml
+  - lab-actions-rbac.yaml
 generators:
   - secret-generator.yaml

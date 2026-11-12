@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-actions
+  namespace: sre
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lab-actions
+  template:
+    metadata:
+      labels:
+        app: lab-actions
+    spec:
+      serviceAccountName: lab-actions
+      automountServiceAccountToken: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: homelab.io/size
+                    operator: In
+                    values:
+                      - large
+      containers:
+        - name: lab-actions
+          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-f94f160@sha256:ec92dbb4eb793e1516732aa2e78b0a921165b35b67a9218305de8d95d78db8a0
+          command: ["python", "-m", "sre_crews.lab_actions"]
+          env:
+            - name: LAB_ACTIONS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: lab-actions
+                  key: LAB_ACTIONS_TOKEN
+            - name: ALLOWED_NAMESPACES
+              value: "llm-gateway,monitoring"
+            - name: DENIED_WORKLOADS
+              value: "llm-gateway/postgres"
+          ports:
+            - containerPort: 8000
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 48Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: tmp
+          emptyDir: {}

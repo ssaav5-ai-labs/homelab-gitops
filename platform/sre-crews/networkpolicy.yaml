@@ -38,7 +38,9 @@ metadata:
   name: allow-egress-gateway
   namespace: sre
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      app: sre-crews
   policyTypes:
     - Egress
   egress:
@@ -71,6 +73,12 @@ spec:
           port: 443
     - to:
         - ipBlock:
+            cidr: 192.168.86.210/32
+      ports:
+        - protocol: TCP
+          port: 6443
+    - to:
+        - ipBlock:
             cidr: 192.168.86.211/32
       ports:
         - protocol: TCP
@@ -94,7 +102,9 @@ metadata:
   name: allow-egress-internet
   namespace: sre
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      app: sre-crews
   policyTypes:
     - Egress
   egress:
@@ -120,6 +130,29 @@ spec:
   podSelector:
     matchLabels:
       app: sre-crews
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: hermes
+          podSelector:
+            matchLabels:
+              app: hermes
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-lab-actions
+  namespace: sre
+spec:
+  podSelector:
+    matchLabels:
+      app: lab-actions
   policyTypes:
     - Ingress
   ingress:
