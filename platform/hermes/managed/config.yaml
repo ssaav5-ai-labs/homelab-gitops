@@ -80,3 +80,15 @@ mcp_servers:
       include: [investigate_alert, weekly_capacity_report, find_runbook]
       resources: false
       prompts: false
+  lab_actions:
+    url: http://lab-actions.sre.svc:8000/mcp
+    headers:
+      Authorization: "Bearer ${LAB_ACTIONS_TOKEN}"
+    trust: untrusted
+    timeout: 600
+    connect_timeout: 15
+    sampling: {enabled: false}
+    tools:
+      include: [restart_workload]
+      resources: false
+      prompts: false

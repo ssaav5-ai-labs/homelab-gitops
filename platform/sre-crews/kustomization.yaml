@@ -7,8 +7,12 @@ resources:
   - deployment.yaml
   - service.yaml
   - networkpolicy.yaml
+  - lab-actions-rbac.yaml
+  - lab-actions-deployment.yaml
+  - lab-actions-service.yaml
 generators:
   - secret-generator.yaml
+  - lab-actions-secret-generator.yaml
 configMapGenerator:
   - name: k8s-mcp
     files:
