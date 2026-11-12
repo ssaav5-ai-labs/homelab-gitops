@@ -74,9 +74,10 @@ spec:
                 rm -f /opt/data/cron-state/grafana-alerts.json
               fi
               # skills.external_dirs is set here (not in the managed config) because
-              # v0.22.7's skill loader reads it only from the user config. Re-applied at
-              # every start so the git-synced skills directory always wins on restart.
-              hermes config set skills.external_dirs '["/git/current/hermes-skills"]'
+              # v0.22.7's skill loader reads it only from the user config. Point it at the
+              # stable /skills emptyDir (populated by git-sync's exechook), not the
+              # git-sync worktree symlink, which changes (and goes stale) on every sync.
+              hermes config set skills.external_dirs '["/skills"]'
           volumeMounts:
             - name: hermes-data
               mountPath: /opt/data
@@ -104,11 +105,17 @@ spec:
             - --root=/git
             - --link=current
             - --period=300s
-            - --max-sync-failures=-1
+            - --max-failures=-1
             - --git-config=safe.directory:*
+            - --exechook-command=/hooks/copy-skills.sh
           volumeMounts:
             - name: skills
               mountPath: /git
+            - name: skills-copy
+              mountPath: /skills
+            - name: hermes-sync-hook
+              mountPath: /hooks
+              readOnly: true
           resources:
             requests:
               cpu: 10m
@@ -156,6 +163,9 @@ spec:
             - name: skills
               mountPath: /git
               readOnly: true
+            - name: skills-copy
+              mountPath: /skills
+              readOnly: true
             - name: tools
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
@@ -195,5 +205,11 @@ spec:
             name: hermes-soul
         - name: skills
           emptyDir: {}
+        - name: skills-copy
+          emptyDir: {}
+        - name: hermes-sync-hook
+          configMap:
+            name: hermes-sync-hook
+            defaultMode: 0755
         - name: tools
           emptyDir: {}
