@@ -21,3 +21,6 @@ configMapGenerator:
   - name: hermes-scripts
     files:
       - scripts/grafana-alerts.py
+  - name: hermes-sync-hook
+    files:
+      - scripts/copy-skills.sh
