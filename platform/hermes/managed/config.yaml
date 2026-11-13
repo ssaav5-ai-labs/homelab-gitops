@@ -43,13 +43,23 @@ approvals:
   single_query_mode: deny
   unattended_mode: deny
   deny:
-    - kubectl delete*
     - kubectl apply*
+    - kubectl create*
+    - kubectl delete*
     - kubectl edit*
     - kubectl patch*
+    - kubectl replace*
+    - kubectl set*
     - kubectl scale*
-    - kubectl drain*
+    - kubectl rollout*
+    - kubectl annotate*
+    - kubectl label*
     - kubectl cordon*
+    - kubectl drain*
+    - kubectl exec*
+    - kubectl cp*
+    - kubectl attach*
+    - kubectl run*
     - git push*
     - "*curl*|*sh*"
     - "*wget*|*sh*"
