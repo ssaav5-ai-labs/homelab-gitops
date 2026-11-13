@@ -39,7 +39,7 @@ spec:
             - /etc/k8s-mcp/config.toml
           ports:
             - containerPort: 8002
-              name: mcp
+              name: k8s-mcp
           volumeMounts:
             - name: k8s-mcp-config
               mountPath: /etc/k8s-mcp/config.toml
@@ -88,7 +88,7 @@ spec:
                   key: GRAFANA_SERVICE_ACCOUNT_TOKEN
           ports:
             - containerPort: 8001
-              name: mcp
+              name: grafana-mcp
           volumeMounts:
             - name: tmp
               mountPath: /tmp
