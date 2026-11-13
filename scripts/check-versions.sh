@@ -98,6 +98,39 @@ if [[ -f apps/argocd.yaml ]]; then
   fi
 
   echo ""
+  echo "=== Checking SRE_CREWS_IMAGE vs lab-actions-deployment.yaml ==="
+  SRE_CREWS_DEPLOYED_LAB=$(grep 'ghcr.io/ssaav5-ai-labs/sre-crews' platform/sre-crews/lab-actions-deployment.yaml | sed 's/.*image:\s*//')
+  if [[ "$SRE_CREWS_DEPLOYED_LAB" != "$SRE_CREWS_IMAGE" ]]; then
+    echo "FAIL: SRE_CREWS_IMAGE=$SRE_CREWS_IMAGE but lab-actions-deployment.yaml image=$SRE_CREWS_DEPLOYED_LAB" >&2
+    FAIL=1
+  else
+    echo "OK: SRE_CREWS_IMAGE=$SRE_CREWS_IMAGE matches lab-actions-deployment.yaml"
+  fi
+
+  echo ""
+  echo "=== Checking ghcr.io image digests resolve ==="
+  if command -v curl >/dev/null 2>&1; then
+    mapfile -t GHCR_LINES < <(grep 'ghcr.io' bootstrap/versions.env 2>/dev/null || true)
+    for line in "${GHCR_LINES[@]}"; do
+      REPO="${line#*ghcr.io/}"
+      REPO="${REPO%%:*}"
+      DIGEST=$(echo "$line" | grep -oP 'sha256:[a-f0-9]{64}' | head -1)
+      if [[ -n "$DIGEST" ]]; then
+        TOKEN=$(curl -sf "https://ghcr.io/token?scope=repository:${REPO}:pull" | sed 's/.*"token":"//; s/".*//' 2>/dev/null) || true
+        HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer ${TOKEN:-}" "https://ghcr.io/v2/${REPO}/manifests/${DIGEST}" 2>/dev/null) || HTTP_CODE="000"
+        if [[ "$HTTP_CODE" != "200" ]]; then
+          echo "FAIL: ghcr.io/${REPO}@${DIGEST} returned HTTP $HTTP_CODE" >&2
+          FAIL=1
+        else
+          echo "OK: ghcr.io/${REPO}@${DIGEST} resolves (HTTP 200)"
+        fi
+      fi
+    done
+  else
+    echo "SKIP: curl not available, cannot check ghcr.io digest resolution"
+  fi
+
+  echo ""
   echo "=== Checking K8S_MCP_IMAGE vs platform/sre-crews/deployment.yaml ==="
   K8S_MCP_DEPLOYED=$(grep 'quay.io/containers/kubernetes_mcp_server' platform/sre-crews/deployment.yaml | sed 's/.*image:\s*//')
   if [[ "$K8S_MCP_DEPLOYED" != "$K8S_MCP_IMAGE" ]]; then
