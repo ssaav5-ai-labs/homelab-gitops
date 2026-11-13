@@ -110,9 +110,11 @@ if [[ -f apps/argocd.yaml ]]; then
   echo ""
   echo "=== Checking ghcr.io image digests resolve ==="
   if command -v curl >/dev/null 2>&1; then
-    while IFS= read -r line; do
-      REPO=$(sed 's#.*ghcr.io/##; s/:.*//' <<< "$line")
-      DIGEST=$(grep -oP 'sha256:[a-f0-9]{64}' <<< "$line" | head -1)
+    mapfile -t GHCR_LINES < <(grep 'ghcr.io' bootstrap/versions.env 2>/dev/null || true)
+    for line in "${GHCR_LINES[@]}"; do
+      REPO="${line#*ghcr.io/}"
+      REPO="${REPO%%:*}"
+      DIGEST=$(echo "$line" | grep -oP 'sha256:[a-f0-9]{64}' | head -1)
       if [[ -n "$DIGEST" ]]; then
         TOKEN=$(curl -sf "https://ghcr.io/token?scope=repository:${REPO}:pull" | sed 's/.*"token":"//; s/".*//' 2>/dev/null) || true
         HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer ${TOKEN:-}" "https://ghcr.io/v2/${REPO}/manifests/${DIGEST}" 2>/dev/null) || HTTP_CODE="000"
@@ -123,7 +125,7 @@ if [[ -f apps/argocd.yaml ]]; then
           echo "OK: ghcr.io/${REPO}@${DIGEST} resolves (HTTP 200)"
         fi
       fi
-    done < <(grep 'ghcr.io' bootstrap/versions.env)
+    done
   else
     echo "SKIP: curl not available, cannot check ghcr.io digest resolution"
   fi
