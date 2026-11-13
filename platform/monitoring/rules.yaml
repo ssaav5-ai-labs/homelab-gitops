@@ -84,3 +84,17 @@ spec:
             severity: critical
           annotations:
             summary: "the gateway's Postgres database is down: every virtual key fails without it"
+        - alert: SreCrewsDown
+          expr: kube_deployment_status_replicas_available{cluster="homelab", namespace="sre", deployment="sre-crews"} == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "the SRE crews are at zero replicas: alert investigation is without the crew until they restart"
+        - alert: CrewsBudgetLow
+          expr: litellm_remaining_api_key_budget_metric{cluster="homelab", api_key_alias="crews"} < 1
+          for: 15m
+          labels:
+            severity: info
+          annotations:
+            summary: "the crews gateway key has less than 1 USD of budget remaining"
