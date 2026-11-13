@@ -33,7 +33,7 @@ spec:
                       - large
       containers:
         - name: lab-actions
-          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-f94f160@sha256:ec92dbb4eb793e1516732aa2e78b0a921165b35b67a9218305de8d95d78db8a0
+          image: ghcr.io/ssaav5-ai-labs/sre-crews:sha-f94f160@sha256:ec92dbb4eb793e6731512aa2e78b0a921165b35b67a9218305de8d95d78db8a0
           command: ["python", "-m", "sre_crews.lab_actions"]
           env:
             - name: LAB_ACTIONS_TOKEN
