@@ -25,3 +25,17 @@ model_list:
     litellm_params:
       model: openrouter/anthropic/claude-sonnet-5.5
       drop_params: true
+  - model_name: jobs-fast
+    litellm_params:
+      model: openrouter/z-ai/glm-5.3-flash
+      drop_params: true
+      extra_body:
+        provider:
+          data_collection: deny
+  - model_name: jobs-reason
+    litellm_params:
+      model: openrouter/anthropic/claude-sonnet-5.5
+      drop_params: true
+      extra_body:
+        provider:
+          data_collection: deny
