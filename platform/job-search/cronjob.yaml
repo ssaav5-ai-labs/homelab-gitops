@@ -1,0 +1,120 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: job-triage
+  namespace: career
+spec:
+  schedule: "0 7 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: job-search
+          securityContext:
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: git-sync
+              image: registry.k8s.io/git-sync/git-sync:v4.8.0
+              args:
+                - --repo=git@github.com:ssaav5/career-vault.git
+                - --ref=main
+                - --root=/vault
+                - --link=current
+                - --one-time
+                - --ssh
+                - --ssh-key-file=/etc/vault-keys/id_ro
+                - --ssh-known-hosts-file=/etc/ssh/known_hosts
+              volumeMounts:
+                - name: vault
+                  mountPath: /vault
+                - name: vault-ro-key
+                  mountPath: /etc/vault-keys/id_ro
+                  subPath: id_ro
+                  readOnly: true
+                - name: known-hosts
+                  mountPath: /etc/ssh/known_hosts
+                  subPath: known_hosts
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 48Mi
+                limits:
+                  memory: 160Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+          containers:
+            - name: triage
+              image: ghcr.io/ssaav5-ai-labs/job-search:sha-4154c9a@sha256:2479eb6a66bb9a9ac40236ac798919529b21746ae06f23d4a0c993d12fc6b3aa
+              command: ["python", "-m", "job_search.triage"]
+              env:
+                - name: LAB_GATEWAY_URL
+                  value: http://llm-gateway.llm-gateway.svc.cluster.local:4000
+                - name: VAULT_READ_ROOT
+                  value: /vault/current
+                - name: VAULT_WORK_ROOT
+                  value: /vault-work
+                - name: VAULT_WRITE_KEY
+                  value: /etc/vault-keys/rw
+                - name: JOB_TRIAGE_ENABLED
+                  value: "true"
+              envFrom:
+                - secretRef:
+                    name: job-search
+              volumeMounts:
+                - name: vault
+                  mountPath: /vault
+                  readOnly: true
+                - name: vault-work
+                  mountPath: /vault-work
+                - name: vault-rw-key
+                  mountPath: /etc/vault-keys/rw
+                  subPath: rw
+                  readOnly: true
+                - name: known-hosts
+                  mountPath: /etc/ssh/known_hosts
+                  subPath: known_hosts
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  memory: 1024Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                runAsUser: 10001
+          restartPolicy: OnFailure
+          volumes:
+            - name: vault
+              emptyDir: {}
+            - name: vault-work
+              emptyDir: {}
+            - name: vault-ro-key
+              secret:
+                secretName: job-search
+                items:
+                  - key: VAULT_RO_KEY
+                    path: id_ro
+                defaultMode: 0600
+            - name: vault-rw-key
+              secret:
+                secretName: job-search
+                items:
+                  - key: VAULT_RW_KEY
+                    path: rw
+                defaultMode: 0600
+            - name: known-hosts
+              configMap:
+                name: job-search-known-hosts
