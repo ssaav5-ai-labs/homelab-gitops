@@ -9,10 +9,10 @@ data:
     Listen 0.0.0.0
     Timeout 600
     MaxClients 20
-    PidFile /dev/null
-    LogFile /dev/stdout
+    PidFile /tmp/tinyproxy.pid
+    LogFile /tmp/tinyproxy.log
     LogLevel Info
-    Filter "/etc/tinyproxy/filter.conf"
+    Filter /etc/tinyproxy/filter.conf
     FilterDefaultDeny Yes
     FilterExtended On
     ConnectPort 443
