@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tinyproxy-config
+  namespace: career
+data:
+  tinyproxy.conf: |
+    Port 3128
+    Listen 0.0.0.0
+    Timeout 600
+    MaxClients 20
+    PidFile /dev/null
+    LogFile /dev/stdout
+    LogLevel Info
+    Filter "/etc/tinyproxy/filter.conf"
+    FilterDefaultDeny Yes
+    FilterExtended On
+    ConnectPort 443
+    DisableViaHeader Yes
+  filter.conf: |
+    ^boards-api\.greenhouse\.io$
+    ^api\.lever\.co$
+    ^api\.ashbyhq\.com$

@@ -29,6 +29,8 @@ spec:
       namespace: hermes
     - server: https://kubernetes.default.svc
       namespace: sre
+    - server: https://kubernetes.default.svc
+      namespace: career
   clusterResourceWhitelist:
     - group: '*'
       kind: Namespace
