@@ -6,17 +6,10 @@ metadata:
 data:
   tinyproxy.conf: |
     Port 3128
-    Listen 0.0.0.0
-    Timeout 600
-    MaxClients 20
-    PidFile /tmp/tinyproxy.pid
-    LogFile /tmp/tinyproxy.log
-    LogLevel Info
     Filter /etc/tinyproxy/filter.conf
     FilterDefaultDeny Yes
     FilterExtended On
     ConnectPort 443
-    DisableViaHeader Yes
   filter.conf: |
     ^boards-api\.greenhouse\.io$
     ^api\.lever\.co$
