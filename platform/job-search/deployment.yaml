@@ -52,6 +52,7 @@ spec:
               memory: 160Mi
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - ALL
