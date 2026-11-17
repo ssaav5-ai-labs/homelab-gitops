@@ -20,7 +20,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: tinyproxy
-          image: dannydirect/tinyproxy:latest@sha256:0c1e9c56952955f799dabddabbd697661ab44172d334f4d27242fde4d33e8bfd
+          image: ghcr.io/ssaav5-ai-labs/egress-proxy:sha-7ef1926@sha256:6aa22aec69e11d9945f9775555eeb8f33ae68c223d78c894938cdff61f897b8c
           ports:
             - containerPort: 3128
               name: proxy
