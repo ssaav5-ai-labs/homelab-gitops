@@ -6,9 +6,6 @@ metadata:
 data:
   tinyproxy.conf: |
     Port 3128
-    Filter /etc/tinyproxy/filter.conf
-    FilterDefaultDeny Yes
-    FilterExtended On
     ConnectPort 443
   filter.conf: |
     ^boards-api\.greenhouse\.io$
