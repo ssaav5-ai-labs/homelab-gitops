@@ -71,12 +71,15 @@ the daily top-5 post.
 
 ```bash
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "0 16 * * 5" \
-  "Call pipeline_summary. Reply with a summary of all pipeline stages and counts." \
+  "Weekly job pipeline: use the job-search skill and post what the pipeline_summary tool returns in #job-search; if it is unavailable, say so." \
   --skill job-search \
   --deliver "slack:C0CHR5N4GDB" \
   --name job-search-friday \
   --timezone Europe/Dublin
 ```
+
+The live job was updated in place with `hermes cron edit ed7c268491d4 --prompt "…"` (not
+re-created); a create from scratch still uses the command above.
 
 Toolsets: the `job-search` skill declares `requires_toolsets: [mcp-job_search]`, which maps
 to the `job_search` MCP server in `managed/config.yaml`. Write tools (`draft_application`,
