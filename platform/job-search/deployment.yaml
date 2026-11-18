@@ -17,6 +17,9 @@ spec:
     spec:
       serviceAccountName: job-search
       securityContext:
+        fsGroup: 65533
+        supplementalGroups:
+          - 65533
         seccompProfile:
           type: RuntimeDefault
       initContainers:
