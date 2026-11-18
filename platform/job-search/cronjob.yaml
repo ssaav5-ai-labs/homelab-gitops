@@ -52,7 +52,7 @@ spec:
                     - ALL
           containers:
             - name: triage
-              image: ghcr.io/ssaav5-ai-labs/job-search:sha-6e0fa2f@sha256:83cadcb7f6c5c55ef98b0124d189309f5c36eafe0911303a3d553f6a569a4d87
+              image: ghcr.io/ssaav5-ai-labs/job-search:sha-45ae12c@sha256:43cb9b68990db5c480fcfbaf781f2bbaad98dd157a2f68930aa2d219b3e0b028
               command: ["python", "-m", "job_search.triage"]
               env:
                 - name: LAB_GATEWAY_URL
