@@ -49,6 +49,49 @@ kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron run grafana-alerts
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron doctor
 ```
 
+## Job-search daily (07:30 Europe/Dublin Mon--Fri)
+
+Calls `todays_matches` and posts the top 5 to `#job-search` (`slack:C0CHR5N4GDB`).
+Until step 9 ships digests, `todays_matches` returns "no digest for today" — post a
+single line "No new matches today" instead of failing.
+
+```bash
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "at 07:30 Europe/Dublin Mon-Fri" \
+  "Call todays_matches. Reply with the top 5 matches ranked by score, one per line with role title, company, and score. If the result is 'no digest for today' or empty, reply with one line: No new matches today." \
+  --skill job-search \
+  --deliver "slack:C0CHR5N4GDB" \
+  --name job-search-daily
+```
+
+## Job-search Fridays (16:00 Europe/Dublin)
+
+Calls `pipeline_summary`, same channel. Scheduled at 16:00 so it does not collide with
+the daily top-5 post.
+
+```bash
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "on Friday at 16:00 Europe/Dublin" \
+  "Call pipeline_summary. Reply with a summary of all pipeline stages and counts." \
+  --skill job-search \
+  --deliver "slack:C0CHR5N4GDB" \
+  --name job-search-friday
+```
+
+Toolsets: the `job-search` skill declares `requires_toolsets: [mcp-job_search]`, which maps
+to the `job_search` MCP server in `managed/config.yaml`. Write tools (`draft_application`,
+`set_status`) are included in the MCP server config but the agent must ask for approval
+(`trust: untrusted`); the cron `cron_mode: deny` setting means cron sessions cannot call
+them at all — the operator replies in the Slack thread with plain words ("draft 2",
+"applied 3") and the agent maps those to `draft_application` / `set_status` in an
+interactive session.
+
+Verify:
+
+```bash
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron list
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron run job-search-daily
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron doctor
+```
+
 ## Webhook (future in-lab alert manager)
 
 The `alerts` webhook route is already defined in `managed/config.yaml`
