@@ -17,9 +17,9 @@ spec:
     spec:
       serviceAccountName: job-search
       securityContext:
-        runAsUser: 10001
-        runAsGroup: 10001
         fsGroup: 10001
+        supplementalGroups:
+          - 10001
         seccompProfile:
           type: RuntimeDefault
       initContainers:
@@ -37,8 +37,6 @@ spec:
             - --ssh-key-file=/etc/vault-keys/id_ro
             - --ssh-known-hosts-file=/etc/ssh/known_hosts
           env:
-            - name: HOME
-              value: /tmp
             - name: GIT_CONFIG_COUNT
               value: "1"
             - name: GIT_CONFIG_KEY_0
@@ -133,6 +131,8 @@ spec:
               drop:
                 - ALL
             runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
       volumes:
         - name: vault
           emptyDir: {}
