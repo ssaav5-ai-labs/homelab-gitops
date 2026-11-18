@@ -17,6 +17,10 @@ model_list:
     litellm_params:
       model: openrouter/z-ai/glm-5.3-flash
       drop_params: true
+      extra_body:
+        reasoning:
+          exclude: true
+          effort: low
   - model_name: code
     litellm_params:
       model: openrouter/deepseek/deepseek-v4-pro
@@ -32,6 +36,9 @@ model_list:
       extra_body:
         provider:
           data_collection: deny
+        reasoning:
+          exclude: true
+          effort: low
   - model_name: jobs-reason
     litellm_params:
       model: openrouter/anthropic/claude-sonnet-5.5
