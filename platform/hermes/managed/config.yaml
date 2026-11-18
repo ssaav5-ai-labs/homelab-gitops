@@ -102,3 +102,15 @@ mcp_servers:
       include: [restart_workload]
       resources: false
       prompts: false
+  job_search:
+    url: http://job-search.career.svc.cluster.local:8000/mcp
+    headers:
+      Authorization: "Bearer ${JOBS_MCP_TOKEN}"
+    trust: untrusted
+    timeout: 300
+    connect_timeout: 15
+    sampling: {enabled: false}
+    tools:
+      include: [score_role, todays_matches, pipeline_summary, draft_application, set_status]
+      resources: false
+      prompts: false
