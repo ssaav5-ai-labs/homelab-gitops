@@ -6,6 +6,8 @@ metadata:
 data:
   tinyproxy.conf: |
     Port 3128
+    Filter /etc/tinyproxy/filter.conf
+    FilterDefaultDeny Yes
   filter.conf: |
     ^boards-api\.greenhouse\.io$
     ^api\.lever\.co$
