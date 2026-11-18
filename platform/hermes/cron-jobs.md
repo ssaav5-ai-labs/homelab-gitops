@@ -56,11 +56,12 @@ Until step 9 ships digests, `todays_matches` returns "no digest for today" — p
 single line "No new matches today" instead of failing.
 
 ```bash
-kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "at 07:30 Europe/Dublin Mon-Fri" \
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "30 7 * * 1-5" \
   "Call todays_matches. Reply with the top 5 matches ranked by score, one per line with role title, company, and score. If the result is 'no digest for today' or empty, reply with one line: No new matches today." \
   --skill job-search \
   --deliver "slack:C0CHR5N4GDB" \
-  --name job-search-daily
+  --name job-search-daily \
+  --timezone Europe/Dublin
 ```
 
 ## Job-search Fridays (16:00 Europe/Dublin)
@@ -69,11 +70,12 @@ Calls `pipeline_summary`, same channel. Scheduled at 16:00 so it does not collid
 the daily top-5 post.
 
 ```bash
-kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "on Friday at 16:00 Europe/Dublin" \
+kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "0 16 * * 5" \
   "Call pipeline_summary. Reply with a summary of all pipeline stages and counts." \
   --skill job-search \
   --deliver "slack:C0CHR5N4GDB" \
-  --name job-search-friday
+  --name job-search-friday \
+  --timezone Europe/Dublin
 ```
 
 Toolsets: the `job-search` skill declares `requires_toolsets: [mcp-job_search]`, which maps
