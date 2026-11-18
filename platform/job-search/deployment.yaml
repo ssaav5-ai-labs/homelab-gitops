@@ -68,7 +68,7 @@ spec:
                 - ALL
       containers:
         - name: server
-          image: ghcr.io/ssaav5-ai-labs/job-search:sha-37d1915@sha256:79bddd1d6f33bedc2bb2146a38cb7bae56eeefe3dc24b48b4f521630d52fa829
+          image: ghcr.io/ssaav5-ai-labs/job-search:sha-5b236bb@sha256:cd5631be1ba2789302406cfd41c430b930f39d5c345711f36331aeb0f13be67b
           ports:
             - containerPort: 8000
               name: http
@@ -78,9 +78,9 @@ spec:
             - name: HTTP_PROXY
               value: http://egress-proxy.career.svc.cluster.local:3128
             - name: NO_PROXY
-              value: localhost,127.0.0.1,.svc,.cluster.local,llm-gateway.llm-gateway.svc.cluster.local
+              value: localhost,127.0.0.1,.svc,.cluster.local,litellm.llm-gateway.svc.cluster.local
             - name: LAB_GATEWAY_URL
-              value: http://llm-gateway.llm-gateway.svc.cluster.local:4000
+              value: http://litellm.llm-gateway.svc.cluster.local:4000
             - name: VAULT_READ_ROOT
               value: /vault/current
             - name: VAULT_WORK_ROOT
@@ -104,6 +104,7 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
+            timeoutSeconds: 5
           volumeMounts:
             - name: vault
               mountPath: /vault

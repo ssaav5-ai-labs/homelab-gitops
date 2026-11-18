@@ -52,11 +52,11 @@ spec:
                     - ALL
           containers:
             - name: triage
-              image: ghcr.io/ssaav5-ai-labs/job-search:sha-37d1915@sha256:79bddd1d6f33bedc2bb2146a38cb7bae56eeefe3dc24b48b4f521630d52fa829
+              image: ghcr.io/ssaav5-ai-labs/job-search:sha-5b236bb@sha256:cd5631be1ba2789302406cfd41c430b930f39d5c345711f36331aeb0f13be67b
               command: ["python", "-m", "job_search.triage"]
               env:
                 - name: LAB_GATEWAY_URL
-                  value: http://llm-gateway.llm-gateway.svc.cluster.local:4000
+                  value: http://litellm.llm-gateway.svc.cluster.local:4000
                 - name: VAULT_READ_ROOT
                   value: /vault/current
                 - name: VAULT_WORK_ROOT
