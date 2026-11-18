@@ -6,7 +6,6 @@ metadata:
 data:
   tinyproxy.conf: |
     Port 3128
-    ConnectPort 443
   filter.conf: |
     ^boards-api\.greenhouse\.io$
     ^api\.lever\.co$
