@@ -17,9 +17,9 @@ spec:
     spec:
       serviceAccountName: job-search
       securityContext:
-        fsGroup: 65533
-        supplementalGroups:
-          - 65533
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
       initContainers:
@@ -37,6 +37,8 @@ spec:
             - --ssh-key-file=/etc/vault-keys/id_ro
             - --ssh-known-hosts-file=/etc/ssh/known_hosts
           env:
+            - name: HOME
+              value: /tmp
             - name: GIT_CONFIG_COUNT
               value: "1"
             - name: GIT_CONFIG_KEY_0
@@ -68,7 +70,7 @@ spec:
                 - ALL
       containers:
         - name: server
-          image: ghcr.io/ssaav5-ai-labs/job-search:sha-6e0fa2f@sha256:83cadcb7f6c5c55ef98b0124d189309f5c36eafe0911303a3d553f6a569a4d87
+          image: ghcr.io/ssaav5-ai-labs/job-search:sha-45ae12c@sha256:43cb9b68990db5c480fcfbaf781f2bbaad98dd157a2f68930aa2d219b3e0b028
           ports:
             - containerPort: 8000
               name: http
@@ -131,7 +133,6 @@ spec:
               drop:
                 - ALL
             runAsNonRoot: true
-            runAsUser: 10001
       volumes:
         - name: vault
           emptyDir: {}
