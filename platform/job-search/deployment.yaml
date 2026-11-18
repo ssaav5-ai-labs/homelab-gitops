@@ -36,6 +36,13 @@ spec:
             - --ssh
             - --ssh-key-file=/etc/vault-keys/id_ro
             - --ssh-known-hosts-file=/etc/ssh/known_hosts
+          env:
+            - name: GIT_CONFIG_COUNT
+              value: "1"
+            - name: GIT_CONFIG_KEY_0
+              value: safe.directory
+            - name: GIT_CONFIG_VALUE_0
+              value: "*"
           volumeMounts:
             - name: vault
               mountPath: /vault
