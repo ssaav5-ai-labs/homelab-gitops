@@ -19,6 +19,9 @@ spec:
         spec:
           serviceAccountName: job-search
           securityContext:
+            fsGroup: 10001
+            supplementalGroups:
+              - 10001
             seccompProfile:
               type: RuntimeDefault
           initContainers:
@@ -33,6 +36,13 @@ spec:
                 - --ssh
                 - --ssh-key-file=/etc/vault-keys/id_ro
                 - --ssh-known-hosts-file=/etc/ssh/known_hosts
+              env:
+                - name: GIT_CONFIG_COUNT
+                  value: "1"
+                - name: GIT_CONFIG_KEY_0
+                  value: safe.directory
+                - name: GIT_CONFIG_VALUE_0
+                  value: "*"
               volumeMounts:
                 - name: vault
                   mountPath: /vault
@@ -52,6 +62,8 @@ spec:
                   memory: 160Mi
               securityContext:
                 allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                runAsUser: 65533
                 capabilities:
                   drop:
                     - ALL
@@ -119,6 +131,7 @@ spec:
                     - ALL
                 runAsNonRoot: true
                 runAsUser: 10001
+                runAsGroup: 10001
           restartPolicy: OnFailure
           volumes:
             - name: vault
