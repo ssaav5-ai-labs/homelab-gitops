@@ -57,12 +57,15 @@ single line "No new matches today" instead of failing.
 
 ```bash
 kubectl -n hermes exec deploy/hermes -c hermes -- hermes cron create "30 7 * * 1-5" \
-  "Call todays_matches. Reply with the top 5 matches ranked by score, one per line with role title, company, and score. If the result is 'no digest for today' or empty, reply with one line: No new matches today." \
+  "Daily job matches: use the job-search skill and post what the todays_matches tool returns in #job-search; if it is unavailable, say so." \
   --skill job-search \
   --deliver "slack:C0CHR5N4GDB" \
   --name job-search-daily \
   --timezone Europe/Dublin
 ```
+
+The live job was updated in place with `hermes cron edit <id> --prompt "…"` (not
+re-created); a create from scratch still uses the command above.
 
 ## Job-search Fridays (16:00 Europe/Dublin)
 

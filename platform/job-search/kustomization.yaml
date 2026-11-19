@@ -9,6 +9,7 @@ resources:
   - networkpolicy.yaml
   - tinyproxy-config.yaml
   - tinyproxy.yaml
+  - cronjob.yaml
 generators:
   - secret-generator.yaml
 configMapGenerator:

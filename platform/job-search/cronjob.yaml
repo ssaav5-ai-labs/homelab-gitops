@@ -5,12 +5,17 @@ metadata:
   namespace: career
 spec:
   schedule: "0 7 * * *"
+  timeZone: Europe/Dublin
   concurrencyPolicy: Forbid
+  activeDeadlineSeconds: 600
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: job-triage
         spec:
           serviceAccountName: job-search
           securityContext:
@@ -52,7 +57,7 @@ spec:
                     - ALL
           containers:
             - name: triage
-              image: ghcr.io/ssaav5-ai-labs/job-search:sha-45ae12c@sha256:43cb9b68990db5c480fcfbaf781f2bbaad98dd157a2f68930aa2d219b3e0b028
+              image: ghcr.io/ssaav5-ai-labs/job-search:sha-8026acf@sha256:95588f98afe8a6d551b8e6c8b4a586a092d84b75e03d4fc81c9c3b25b35cb812
               command: ["python", "-m", "job_search.triage"]
               env:
                 - name: LAB_GATEWAY_URL
@@ -65,9 +70,28 @@ spec:
                   value: /etc/vault-keys/rw
                 - name: JOB_TRIAGE_ENABLED
                   value: "true"
-              envFrom:
-                - secretRef:
-                    name: job-search
+                - name: IMAP_PROXY
+                  value: http://egress-proxy.career.svc.cluster.local:3128
+                - name: JOBS_GATEWAY_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: job-search
+                      key: JOBS_GATEWAY_KEY
+                - name: IMAP_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: job-triage
+                      key: IMAP_HOST
+                - name: IMAP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: job-triage
+                      key: IMAP_USER
+                - name: IMAP_APP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: job-triage
+                      key: IMAP_APP_PASSWORD
               volumeMounts:
                 - name: vault
                   mountPath: /vault
