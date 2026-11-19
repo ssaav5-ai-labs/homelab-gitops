@@ -371,8 +371,12 @@ spec:
   ingress:
     - from:
         - podSelector:
-            matchLabels:
-              app: job-search
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - job-search
+                  - job-triage
       ports:
         - protocol: TCP
           port: 3128
