@@ -7,11 +7,11 @@ spec:
   schedule: "0 7 * * *"
   timeZone: Europe/Dublin
   concurrencyPolicy: Forbid
-  activeDeadlineSeconds: 600
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 600
       template:
         metadata:
           labels:
