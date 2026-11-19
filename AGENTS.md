@@ -3,7 +3,7 @@
 This repo is the GitOps source of truth for the k3s cluster. Everything here is applied by Argo CD.
 
 ## Read first
-- The handbook: https://github.com/ssaav5-ai-labs/handbook (a sibling folder under `~/code/github.com/ssaav5-ai-labs/`).
+- The handbook: `/knowledge/handbook`.
 - The playbook protocol: `playbooks/RUNNING.md` in the handbook.
 - Decisions: `docs/decisions/` in the handbook; open questions: `docs/open-questions/`.
 - The playbook 07 run review (identifier-deny, cluster-write-guard and scratch-work rules).
