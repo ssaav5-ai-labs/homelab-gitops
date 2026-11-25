@@ -1,0 +1,24 @@
+# claude-agent: Claude Code on the devbox (ADR-0038 phase 2).
+# Read-only, same rules as Hermes and the SRE crews (hermes-reader):
+# no secrets, no configmaps, no exec, no writes. Changes to the cluster go
+# through a PR to this repo and Argo CD, never through this identity.
+# Tokens are short-lived and minted by a human: scripts/claude-agent-kubeconfig.sh.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-agent
+  namespace: agent-access
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: claude-agent-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hermes-reader
+subjects:
+  - kind: ServiceAccount
+    name: claude-agent
+    namespace: agent-access
