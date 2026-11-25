@@ -1,0 +1,8 @@
+# Identities for agents that run OUTSIDE the cluster (ADR-0038 phase 2).
+# Nothing runs here: the namespace only holds their ServiceAccounts.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agent-access
+  labels:
+    pod-security.kubernetes.io/enforce: restricted

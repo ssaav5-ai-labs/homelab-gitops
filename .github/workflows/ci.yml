@@ -69,4 +69,5 @@ jobs:
           export PATH="/tmp:$PATH"
           ./kustomize build --enable-alpha-plugins platform/hermes > /tmp/hermes.yaml
           ./kustomize build --enable-alpha-plugins platform/sre-crews > /tmp/sre-crews.yaml
-          ./kubeconform -strict -summary -ignore-missing-schemas /tmp/hermes.yaml /tmp/sre-crews.yaml
+          ./kustomize build platform/agent-access > /tmp/agent-access.yaml
+          ./kubeconform -strict -summary -ignore-missing-schemas /tmp/hermes.yaml /tmp/sre-crews.yaml /tmp/agent-access.yaml
