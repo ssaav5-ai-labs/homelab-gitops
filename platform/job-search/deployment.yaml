@@ -68,7 +68,7 @@ spec:
                 - ALL
       containers:
         - name: server
-          image: ghcr.io/ssaav5-ai-labs/job-search:sha-a1e18e8@sha256:5d15621180b82aa4908894ee62760e5edce3a046416c6f2d7b03a5d1f7627d5a
+          image: ghcr.io/ssaav5-ai-labs/job-search:sha-830e327@sha256:f2937370b93e2f2cc35aba4d06b0c05f89e3c22653dbbba1a4fe9d6f595ecb27
           ports:
             - containerPort: 8000
               name: http
